@@ -11,8 +11,28 @@
 #include <nvs_flash.h>
 #include <esp_netif.h>
 
+char buffer[1024];
+
+static const char* html_template = R"(
+<!DOCTYPE html>
+<html>
+<head><title>Timer Status</title></head>
+<body>
+    <h1>Timer Status</h1>
+    <div>Uptime: %s</div>
+    <div>Temperature: <p class='temp'>%.2f</p> C</div>
+    <div>Pressure: <p class='pressure-pa'>%.2f</p> Pa</div>
+    <div>Pressure: <p class='pressure-mm'>%.2f</p> mm</div>
+    <div>Timer state: <p class='timer-state'>%d</p></div>
+    <div>Time left to tick: <p class='timer-end'>%s</p></div>
+    <div>Last reset reason: </p class='reset-reason'>%d</p>
+    <div>Free heap: <p class='heap'>%d</p> bytes</div>
+</body>
+</html>
+)";
+
 static const char *TAG = "Network";
-String wifiStatusToString(wl_status_t status) {
+String Network::wifiStatusToString(wl_status_t status) {
   switch (status) {
     case WL_CONNECTED:
       return "Connected";
@@ -37,31 +57,12 @@ void Network::begin() {
     WiFi.begin();
     startServer();
 }
-char buffer[1024];
-static const char* html_template = R"(
-<!DOCTYPE html>
-<html>
-<head><title>Timer Status</title></head>
-<body>
-    <h1>Timer Status</h1>
-    <div>Uptime: %s</div>
-    <div>Temperature: <p class='temp'>%.2f</p> C</div>
-    <div>Humidity: <p class='humidity'>%.2f</p>%%</div>
-    <div>Pressure: <p class='pressure-pa'>%.2f</p> Pa</div>
-    <div>Pressure: <p class='pressure-mm'>%.2f</p> mm</div>
-    <div>Timer state: <p class='timer-state'>%d</p></div>
-    <div>Time left to tick: <p class='timer-end'>%s</p></div>
-    <div>Last reset reason: </p class='reset-reason'>%d</p>
-    <div>Free heap: <p class='heap'>%d</p> bytes</div>
-</body>
-</html>
-)";
+
 // HTTP GET request handler for "/"
 esp_err_t Network::helloGetHandler(httpd_req_t *req) {
 
     sprintf(buffer, html_template,  Utils::millisToTimeFormat(millis()),
-          sensors.getTemperature(),
-           sensors.getRelativeHumidity(), 
+          sensors.getTemperature(), 
            sensors.getPressurePa(),
             sensors.getPressureMM(),
             !timer.isFinished(),

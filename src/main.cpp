@@ -45,12 +45,9 @@ void readTempPressure()
     if (i == 0)
     {
       lcd.clear();
-      lcd.print(sensors.getTemperature());
-      lcd.print("\1C ");
-      lcd.print(sensors.getPressureMM());
-      lcd.print("mm");
+      lcd.printf("%.2f\1C %.2fmm", sensors.getTemperature(), sensors.getPressureMM());
       lcd.setCursor(0, 1);
-     lcd.printf("Humidity = %.2f", sensors.getRelativeHumidity());
+     lcd.printf("%.2f Pa", sensors.getPressurePa());
     }
     i++;
     vTaskDelay(pdMS_TO_TICKS(5));
@@ -118,25 +115,11 @@ void mainMenu()
   
 
 }
-void mainTask()
+
+void loop()
 {
   while(1){
     mainMenu();
     vTaskDelay(pdMS_TO_TICKS(100));
   }
-}
-TaskHandle_t mainTaskH = NULL;
-
-void loop()
-{
-  // RTOS main menu handler
-  if (!mainTaskH){
-    xTaskCreate([](void* arg) { mainTask(); }, "mainTask", 4096, NULL, 1, &mainTaskH);
-  }
-  eTaskState taskState = eTaskGetState(mainTaskH);
-  if (taskState == eDeleted) {
-    mainTaskH = NULL;
-  }
-
-  vTaskDelay(pdMS_TO_TICKS(100));
 }

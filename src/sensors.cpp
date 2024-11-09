@@ -3,7 +3,6 @@ Sensors::Sensors(){
 }
 void Sensors::begin(){
     // initialize sensors
-    dht.begin();
     bmpStatus = bmp.begin(BMP_SENSOR_ADDRESS);
     // Configure sensors
     bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
@@ -21,14 +20,7 @@ void Sensors::loopTask(){
         bmpTemperature = bmp.readTemperature();
         pressurePa = bmp.readPressure();
         pressureMM = pressurePa / 133.322; // some constant value I forgot name
-        // Ensure it doesn't read too much
-        if (millis() - lastDHTread > 3000){
-            auto humidityBuffer = dht.readHumidity(true);
-            relativeHumidity = isnan(humidityBuffer)? relativeHumidity:humidityBuffer;
-            lastDHTread = millis();
-        }
-
-        // Do pause till next sensors check
+          // Do pause till next sensors check
         vTaskDelay(pdMS_TO_TICKS(SLEEP_TIME));
     }
 

@@ -12,6 +12,7 @@ public:
     void startServer();
     void begin();
     void WiFiMenu();
+    static String wifiStatusToString(wl_status_t status);
 private:
     // Starts the HTTP server and registers URI handlers
     httpd_handle_t startWebServer();
