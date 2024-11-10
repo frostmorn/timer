@@ -31,6 +31,7 @@ void Timer::timerLoop(){
         if (!finished){
             while ((millis() - start) < waitTime) {
                 vTaskDelay(pdMS_TO_TICKS(10));
+                finished = true;
             }
             buzzer.doMarioSong();
         }
