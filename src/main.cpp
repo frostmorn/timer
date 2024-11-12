@@ -9,27 +9,21 @@
 #include <freertos/semphr.h>
 #include "sensors.h"
 #include "network.h"
-#include "buzzer.h"
 #include "ui/timesetup.h"
 #include "esp_system.h"
 #include "esp_task_wdt.h"
 #include "esp_log.h"
+#include "settings.h"
 
-bool backlight = false;
-void toggleBacklight()
-{
-  backlight = !backlight;
-  lcd.setBacklight(backlight);
-}
 void setup()
 {
   Serial.begin(115200);
   Serial.println("Testing Serial output...");
+  settings.begin();
   timer.begin();
   buzzer.begin();
   network.begin();
   lcd.init();
-  toggleBacklight();
   controller.begin();
   sensors.begin();
   byte degreeSymbol[8] = DEGREE_SYMBOL;
@@ -83,8 +77,7 @@ void mainMenu()
   Menu menu(&lcd);
   menu.addItem("Timer");
   menu.addItem("Sensors");
-  menu.addItem("Wi-Fi");
-  menu.addItem("B.light On/Off");
+  menu.addItem("Settings");
   while (!menu.isFinished())
   {
     // delay(500);
@@ -103,10 +96,7 @@ void mainMenu()
       readTempPressure();
       break;
     case 2:
-      network.WiFiMenu();
-      break;
-    case 3:
-      toggleBacklight();
+      settings.mainMenu();
       break;
     default:
       break;

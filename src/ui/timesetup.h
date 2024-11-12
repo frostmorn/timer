@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
 #include "controller.h"
-#include "buzzer.h"
 #include "utils.h"
 #include "timer.h"
 #define TIME_FMT_STR "    %02d:%02d:%02d    "

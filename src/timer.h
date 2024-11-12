@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include "utils.h"
-#include "buzzer.h"
+#include "buzzer/buzzer.h"
 class Timer{
 public:
     Timer(){}
